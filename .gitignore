@@ -1,0 +1,30 @@
+# --- Java ---
+*.class
+*.jar
+*.war
+
+# --- IDE (IntelliJ IDEA) ---
+.idea/
+*.iml
+out/
+gen/
+
+# --- IDE (Eclipse) ---
+.metadata/
+.classpath
+.project
+.settings/
+bin/
+
+# --- IDE (VS Code) ---
+.vscode/
+
+# --- Système ---
+.DS_Store
+Thumbs.db
+
+# --- Dossiers spécifiques au projet (si générés) ---
+# Si tu compiles en ligne de commande, les .class sont à la racine des packages
+# Tu peux ignorer les dossiers de compilation s'ils sont regroupés :
+# /bin/
+# /out/
