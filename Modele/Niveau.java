@@ -53,7 +53,80 @@ public class Niveau implements Cloneable {
     public void    placerMarque(int i, int j)  { tableau[i][j] |=  MARQUE; }
     public void    enleverMarque(int i, int j) { tableau[i][j] &= ~MARQUE; }
     public boolean aMarque(int i, int j)       { return (tableau[i][j] & MARQUE) != 0; }
+    
+    /*fonctions ajoutées qui va nous aider pour la partie IA*/
+    
+    //renvoie  la liste des cases accessibles à partir de la case en arguments
+    //chaque ligne de la liste(qui est une matrice) correspond à une case
+    public int [] []  casesLibresVoisines(int i, int j){
+       
+        int [] [] listeCases = new int[4][2]; //max 4 cases intialisées à -1
+        for (int i=0;i<listeCases.length;i++){
+            for(int j=0;j<listeCases[i].length;j++) listeCases[i][j]=-1;
+        }
 
+        //case du haut
+        if (estVide(i,j+1)){
+            listeCases[0][0]=i ;
+            listeCases[0][1]=j+1;
+        }
+        //bas
+         if (estVide(i,j-1)){
+            listeCases[0][0]=i;
+            listeCases[0][1]=j-1;
+        }
+        //gauche
+         if (estVide(i-1,j)){
+            listeCases[0][0]=i-1 ;
+            listeCases[0][1]=j;
+        }
+        //droite
+        if (estVide(i+1,j)){
+            listeCases[0][0]=i+1 ;
+            listeCases[0][1]=j;
+        }
+
+        return listeCases;
+        
+    }
+    //fonction qui prend le personnage et le met sur toutes les cases accessibles à sa position
+    public void clonePersonnage(){
+        int [][] accessibles = casesLibresVoisines(getPousseurI(),getPousseurJ());
+        for(int i=0;i<accessibles.length;i++){
+            int abscisse = accessibles[i][0];
+            int ordonnee = accessibles[i][1];
+            if(abcisse !=-1 && coordonnees !=-1) ajoutePousseur(abcisse,ordonnee); //ajout du joueur
+        }
+
+    }
+    //supprime les personnages sur la carte
+    public void supprimePersonnage(){
+        for(int i=0;i<nbLignes;i++){
+            for(int j=0;j<nbColonnes;j++){
+                if(aPousseur(i,j)) videCase(i,j);
+            }
+        }
+    }
+
+    //fonction qui renvoie la liste des caisses
+    public List<int[]> coordonneesCaisses(){
+       List<int[]> listeCaisses = new ArrayList<>();
+       for(int i=0;i<nbLignes;i++){
+        for(int j=0;j<nbColonnes;j++){
+            if(aCaisse(i,j)) listeCaisses.add(new int [] {i , j});
+        }
+       }
+       
+        return listeCaisses;
+        
+    }
+    //renvoie une nouvelle carte en poussant c(i,j) dans la direction indiquée
+    //public nouvelleCarte()
+
+
+
+
+    
     public boolean estResolu() {
         for (int i = 0; i < nbLignes; i++)
             for (int j = 0; j < nbColonnes; j++)
