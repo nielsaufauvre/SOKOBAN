@@ -45,6 +45,7 @@ public class EcouteurDeClavier implements KeyListener {
 
     /** Appelé par AnimationJeuAutomatique pour jouer un coup programmatique. */
     public void deplacer(int di, int dj) {
+        
         controller.tenterDeplacement(di, dj);
     }
 

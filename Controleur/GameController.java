@@ -51,9 +51,7 @@ public class GameController {
         }
     }
 
-    // -----------------------------------------------------------------------
-    // Tentative de déplacement (appelée par les deux écouteurs)
-    // -----------------------------------------------------------------------
+
 
     public void tenterDeplacement(int di, int dj) {
         int pi = niveauGraphique.niveau.getPousseurI();
@@ -92,9 +90,7 @@ public class GameController {
         }
     }
 
-    // -----------------------------------------------------------------------
-    // Undo
-    // -----------------------------------------------------------------------
+
 
     private void sauvegarderEtat() {
         historique.push((Niveau) niveauGraphique.niveau.clone());
@@ -109,11 +105,7 @@ public class GameController {
         niveauGraphique.repaint();
     }
 
-    // -----------------------------------------------------------------------
-    // Passage au niveau suivant (était dupliqué 3 fois)
-    // -----------------------------------------------------------------------
-
-    private void passerAuNiveauSuivant() {
+        private void passerAuNiveauSuivant() {
         int prochain = niveauGraphique.numNiveau + 1;
 
         // Vérifier s'il existe un niveau suivant
@@ -127,7 +119,7 @@ public class GameController {
         niveauGraphique = new NiveauGraphique(prochain);
         frame.add(niveauGraphique);
 
-        // Recréer les écouteurs sur le nouveau composant
+
         EcouteurDeClavier clavier = new EcouteurDeClavier(frame, niveauGraphique, this);
         EcouteurDeSouris souris  = new EcouteurDeSouris(this);
 
@@ -136,7 +128,7 @@ public class GameController {
         niveauGraphique.setFocusable(true);
         SwingUtilities.invokeLater(() -> niveauGraphique.requestFocusInWindow());
 
-        // Redimensionner la fenêtre au nouveau niveau
+
         frame.revalidate();
         frame.repaint();
         frame.pack();
