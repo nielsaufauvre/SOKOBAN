@@ -155,27 +155,35 @@ public class Niveau implements Cloneable {
 
     }
 
-    public boolean poussable(int ci, int cj){
+    //elle renvoie aussi la direction où on peut pousser 
+    //dans la variable direction
+    public boolean poussable(int ci, int cj,int direction){
        int pi = getPousseurI();
        int pj = getPousseurJ();
 
        if (ci == pi-1){
+            d = GAUCHE;
            return estVide(ci+1,cj)|| aBut(ci+1,cj);
        }
         if (ci == pi+1){
+            d = DROITE;
             return estVide(ci-1,cj)|| aBut(ci-1,cj);
         }
         if (cj == pj-1){
+            d = HAUT;
             return estVide(ci,cj+1)|| aBut(ci,cj+1);
         }
         if (cj == pj+1){
+            d = BAS;
             return estVide(ci,cj-1)|| aBut(ci,cj-1);
         }
 
+        d = -1; //cas où on ne peut pas pousser
         return false;
 
 
     }
+    //on suppoose que la caisse passer en argument est poussable
     public int[][] pousser(int[][] carte, int i, int j, int direction) {
         if (direction < 0 || direction > 3) {
             return carte;
@@ -204,22 +212,46 @@ public class Niveau implements Cloneable {
         int ci = i + 2 * di;
         int cj = j + 2 * dj;
 
-        if (poussable(ni, nj)) {
+    
             videCase(i, j);
-            ajoutePousseur(ni, nj);
+            //ajoutePousseur(ni, nj);
             ajouteCaisse(ci, cj);
-        }
+            //attention ici ajouteCaisse modifie uniquement la carte de niveau 
+            //est il necessaire de passer la carte en argument????
+            //celà dependra des algo d'après, car si c'est pas le tableau initiale 
+            //de la carte qu'on utilise, il faudra alors modifier la carte passée
+            //en argument et la fonction ajouterCaisse de même
+        
+        
 
         return carte;
     }
-
-    public List<int [][]> cartes_accessibles(int [][] carte){
+    
+    //d'après le schema le personnage ne bouge pas(correction faite dejà dans pousser)
+    //idee: trouver toutes les caisses poussables , et les pousser dans 
+    //la direction poussable
+    public List<int [][]>cartesAccessibles(int [][] carte){
         // on suppose que le personne a été cloné sur la carte
         List <int [][]> listeCartes = new ArrayList<int[][]>();
+
+        List<int[]> listeCaisses = coordonneesCaisses();
+        for(int i=0;i<listeCaisses.size();i++){
+            int ci = listeCaisses[i][0];
+            int cj = listeCaisses[i][1];
+            int direction = -1;
+            
+            if(poussable(ci,cj,direction)){
+                listeCartes.add(pousser(carte,ci,cj,d))
+            }
+            
+        }
+        return listeCaisses;
 
 
     }
 
+    //passe à l'implementation du parcours 
+    
 
     //renvoie une nouvelle carte en poussant c(i,j) dans la direction indiquée
     //public nouvelleCarte()
