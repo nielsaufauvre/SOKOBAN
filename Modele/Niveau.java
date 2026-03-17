@@ -66,12 +66,7 @@ public class Niveau implements Cloneable {
 
 
     
-    public boolean estResolu() {
-        for (int i = 0; i < nbLignes; i++)
-            for (int j = 0; j < nbColonnes; j++)
-                if (aBut(i, j) && !aCaisse(i, j)) return false;
-        return true;
-    }
+
 
     @Override
     public Object clone() {
@@ -88,52 +83,50 @@ public class Niveau implements Cloneable {
     }
 
     /**********************************************************************************************/
-    /*fonctions ajoutées qui va nous aider pour la partie IA*/
+    //TODO: revoie les fonctions + ajouter commentaires
 
-    //renvoie  la liste des cases accessibles à partir de la case en arguments
-    //chaque ligne de la liste(qui est une matrice) correspond à une case
-    public int [] [] casesLibresVoisines(int x, int y){
 
-        int [] [] listeCases = new int[4][2]; //max 4 cases intialisées à -1
-        for (int i=0;i<listeCases.length;i++){
-            for(int j=0;j<listeCases[i].length;j++) listeCases[i][j]=-1;
-        }
+    public List<int[]> casesLibresVoisines(int x, int y) {
+        List<int[]> liste = new ArrayList<>();
+        int[][] deplacements = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
 
-        //case du haut
-        if (estVide(x,y+1)){
-            listeCases[0][0]=x ;
-            listeCases[0][1]=y+1;
-        }
-        //bas
-        if (estVide(x,y-1)){
-            listeCases[1][0]=x;
-            listeCases[1][1]=y-1;
-        }
-        //gauche
-        if (estVide(x-1,y)){
-            listeCases[2][0]=x-1 ;
-            listeCases[2][1]=y;
-        }
-        //droite
-        if (estVide(x+1,y)){
-            listeCases[3][0]=x+1 ;
-            listeCases[3][1]=y;
-        }
+        for (int[] d : deplacements) {
+            int nx = x + d[0];
+            int ny = y + d[1];
 
-        return listeCases;
-
+            if (nx >= 0 && nx < nbLignes && ny >= 0 && ny < nbColonnes && estVide(nx, ny)) {
+                liste.add(new int[]{nx, ny});
+            }
+        }
+        return liste;
     }
-    //fonction qui prend le personnage et le met sur toutes les cases accessibles à sa position
-    public void clonePersonnage(){
-        int [][] accessibles = casesLibresVoisines(getPousseurI(),getPousseurJ());
-        for(int i=0;i<accessibles.length;i++){
-            int abscisse = accessibles[i][0];
-            int ordonnee = accessibles[i][1];
-            if(abscisse !=-1 && ordonnee !=-1) ajoutePousseur(abscisse,ordonnee); //ajout du joueur
-        }
 
+    public void clonePersonnage() {
+
+        List<int[]> pile = new ArrayList<>();
+        int[] coordonnees = new int[2];
+
+        coordonnees[0] = getPousseurI();
+        coordonnees[1] = getPousseurJ();
+
+        pile.add(coordonnees);
+
+        while (!pile.isEmpty()) {
+            int[] pos = pile.remove(pile.size() - 1);
+            int pi = pos[0];
+            int pj = pos[1];
+
+            for (int[] voisine : casesLibresVoisines(pi, pj)) {
+                int vi = voisine[0];
+                int vj = voisine[1];
+                if (!aPousseur(vi, vj)) {
+                    ajoutePousseur(vi, vj);
+                    pile.add(new int[]{vi, vj});
+                }
+            }
+        }
     }
-    //supprime les personnages sur la carte
+
     public void supprimePersonnage(){
         for(int i=0;i<nbLignes;i++){
             for(int j=0;j<nbColonnes;j++){
@@ -142,7 +135,7 @@ public class Niveau implements Cloneable {
         }
     }
 
-    //fonction qui renvoie la liste des caisses
+
     public List<int[]> coordonneesCaisses(){
         List<int[]> listeCaisses = new ArrayList<>();
         for(int i=0;i<nbLignes;i++){
@@ -155,105 +148,94 @@ public class Niveau implements Cloneable {
 
     }
 
-    //elle renvoie aussi la direction où on peut pousser 
-    //dans la variable direction
-    public boolean poussable(int ci, int cj,int direction){
-       int pi = getPousseurI();
-       int pj = getPousseurJ();
 
-       if (ci == pi-1){
-            d = GAUCHE;
-           return estVide(ci+1,cj)|| aBut(ci+1,cj);
-       }
-        if (ci == pi+1){
-            d = DROITE;
-            return estVide(ci-1,cj)|| aBut(ci-1,cj);
-        }
-        if (cj == pj-1){
-            d = HAUT;
-            return estVide(ci,cj+1)|| aBut(ci,cj+1);
-        }
-        if (cj == pj+1){
-            d = BAS;
-            return estVide(ci,cj-1)|| aBut(ci,cj-1);
-        }
-
-        d = -1; //cas où on ne peut pas pousser
-        return false;
-
-
-    }
-    //on suppoose que la caisse passer en argument est poussable
-    public int[][] pousser(int[][] carte, int i, int j, int direction) {
-        if (direction < 0 || direction > 3) {
-            return carte;
-        }
-
-        int di = 0;
-        int dj = 0;
+    public boolean poussable(int ci, int cj, int direction) {
+        int di = 0, dj = 0;
 
         switch (direction) {
-            case HAUT:
-                di = -1;
-                break;
-            case BAS:
-                di = 1;
-                break;
-            case GAUCHE:
-                dj = -1;
-                break;
-            case DROITE:
-                dj = 1;
-                break;
+            case HAUT:   di = -1; break;
+            case BAS:    di =  1; break;
+            case GAUCHE: dj = -1; break;
+            case DROITE: dj =  1; break;
+        }
+
+
+        int pi = ci - di;
+        int pj = cj - dj;
+
+        int ni = ci + di;
+        int nj = cj + dj;
+
+
+
+
+        return aPousseur(pi, pj) &&
+                ni >= 0 && ni < nbLignes && nj >= 0 && nj < nbColonnes &&
+                (estVide(ni, nj) || (aBut(ni, nj) && !aCaisse(ni, nj)));
+    }
+
+    public Niveau pousser(int i, int j, int direction) {
+        Niveau nouveauNiveau = (Niveau) this.clone();
+
+        int di = 0, dj = 0;
+        switch (direction) {
+            case HAUT:   di = -1; break;
+            case BAS:    di =  1; break;
+            case GAUCHE: dj = -1; break;
+            case DROITE: dj =  1; break;
         }
 
         int ni = i + di;
         int nj = j + dj;
-        int ci = i + 2 * di;
-        int cj = j + 2 * dj;
 
-    
-            videCase(i, j);
-            //ajoutePousseur(ni, nj);
-            ajouteCaisse(ci, cj);
-            //attention ici ajouteCaisse modifie uniquement la carte de niveau 
-            //est il necessaire de passer la carte en argument????
-            //celà dependra des algo d'après, car si c'est pas le tableau initiale 
-            //de la carte qu'on utilise, il faudra alors modifier la carte passée
-            //en argument et la fonction ajouterCaisse de même
-        
-        
 
-        return carte;
+        nouveauNiveau.supprimePersonnage();
+        nouveauNiveau.retireCaisse(i, j);
+        nouveauNiveau.ajouteCaisse(ni, nj);
+        nouveauNiveau.ajoutePousseur(i, j);
+        nouveauNiveau.setPositionPousseur(i, j);
+
+        return nouveauNiveau;
     }
-    
-    //d'après le schema le personnage ne bouge pas(correction faite dejà dans pousser)
-    //idee: trouver toutes les caisses poussables , et les pousser dans 
-    //la direction poussable
-    public List<int [][]>cartesAccessibles(int [][] carte){
-        // on suppose que le personne a été cloné sur la carte
-        List <int [][]> listeCartes = new ArrayList<int[][]>();
 
-        List<int[]> listeCaisses = coordonneesCaisses();
-        for(int i=0;i<listeCaisses.size();i++){
-            int ci = listeCaisses[i][0];
-            int cj = listeCaisses[i][1];
-            int direction = -1;
-            
-            if(poussable(ci,cj,direction)){
-                listeCartes.add(pousser(carte,ci,cj,d))
+    
+
+    public List<Niveau> cartesAccessibles() {
+        List<Niveau> accessibles = new ArrayList<>();
+        List<int[]> caisses = coordonneesCaisses(); // [cite: 48]
+
+        for (int[] c : caisses) {
+            for (int dir : new int[]{HAUT, BAS, GAUCHE, DROITE}) {
+                if (poussable(c[0], c[1], dir)) {
+                    Niveau n = pousser(c[0], c[1], dir);
+                    n.clonePersonnage();
+                    accessibles.add(n);
+                }
             }
-            
         }
-        return listeCaisses;
-
-
+        return accessibles;
     }
 
-    //passe à l'implementation du parcours 
-    
 
-    //renvoie une nouvelle carte en poussant c(i,j) dans la direction indiquée
-    //public nouvelleCarte()
+    public String code() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < nbLignes; i++) {
+            for (int j = 0; j < nbColonnes; j++) {
+                sb.append(tableau[i][j]).append(",");
+            }
+        }
+        return sb.toString();
+    }
+
+    public boolean estResolu() {
+        for (int i = 0; i < nbLignes; i++)
+            for (int j = 0; j < nbColonnes; j++)
+                if (aBut(i, j) && !aCaisse(i, j)){
+                    return false;
+                }
+        return true;
+    }
+
+
 
 }
