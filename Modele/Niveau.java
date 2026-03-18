@@ -218,9 +218,37 @@ public class Niveau implements Cloneable {
         }
         return sb.toString();
     }
+
+
+    private int nbButs(){
+        int compteur=0;
+        for (int i = 0; i < nbLignes; i++){
+            for (int j = 0; j < nbColonnes; j++){
+                if(aBut(i,j)) compteur++;
+            }
+        }
+            
+        return compteur;       
+    }
+
+    private int nbCaisses(){
+        int compteur=0;
+        for (int i = 0; i < nbLignes; i++){
+            for (int j = 0; j < nbColonnes; j++){
+                if(aCaisse(i,j)) compteur++;
+            }
+        }
+            
+        return compteur;   
+
+    }
     
     //Resolution
     public boolean estResolu() {
+        //verifier d'abord que le nombre de caisses==nombre de buts
+        int nombreCaisses = nbCaisses();
+        int nombreButs = nbButs();
+        if(nombreCaisses != nombreButs ) return false;
         for (int i = 0; i < nbLignes; i++)
             for (int j = 0; j < nbColonnes; j++)
                 if (aBut(i, j) && !aCaisse(i, j)){

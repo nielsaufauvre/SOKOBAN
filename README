@@ -1,6 +1,16 @@
-#BUGS repertoriés
-    si on a plus de caisses que de niveaux il le resout 
-    pas de changement de numero de niveau sur l'affichage
-    si on joue à la normale , pas d'affichage du message gagné
+#j'ai deplacé le fichier de niveau dans fichier_niveaux
+
+
+#AMELIORATION repertoriés 
+    #si on joue à la normale , pas d'affichage du message gagné
     #Ajoutons aussi une option pour permettre au joueur de passer au 
-        niveau suivant même s'il l'a pas résolu
+        # niveau suivant même s'il l'a pas résolu
+    #Faire un script qui va passer differents fichiers aux niveaux et resoudre
+    # il suffira juste de passer le nom du fichiers niveaux en argument dans NiveeauGraphique au lieu que ça soit statique
+
+#POSSIBLE LENTEUR OU BUGS
+    #le niveau 10 est lent, j'ai pas eu la patience d'attendre à ce que ça soit resolu
+
+
+#AMELIORATION A FAIRE:
+    UTILISATION DE A* QUI EST PLUS RAPIDE

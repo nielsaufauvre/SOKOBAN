@@ -11,7 +11,6 @@ import java.util.List;
 /**
  * Classe centrale qui contient toute la logique de déplacement et de
  * changement de niveau. EcouteurDeClavier et EcouteurDeSouris délèguent
- * ici pour éviter la duplication de code.
  */
 
 
@@ -122,7 +121,7 @@ public class GameController {
         frame.remove(niveauGraphique);
         niveauGraphique = new NiveauGraphique(prochain);
         frame.add(niveauGraphique);
-
+        frame.setTitle("Sokoban — Niveau " + prochain);
 
         EcouteurDeClavier clavier = new EcouteurDeClavier(frame, niveauGraphique, this);
         EcouteurDeSouris souris  = new EcouteurDeSouris(this);
