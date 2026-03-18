@@ -14,7 +14,7 @@ import java.util.List;
  * ici pour éviter la duplication de code.
  */
 
-//je rajoute le solveur
+
 public class GameController {
 
     private static final int TAILLE_CASE = 28;
@@ -41,10 +41,7 @@ public class GameController {
         return TAILLE_CASE;
     }
 
-    // -----------------------------------------------------------------------
-    // Helpers partagés (étaient dupliqués dans les deux écouteurs)
-    // -----------------------------------------------------------------------
-
+    
     public boolean estAccessible(int i, int j) {
         return niveauGraphique.niveau.estVide(i, j) ||
                 (niveauGraphique.niveau.aBut(i, j) && !niveauGraphique.niveau.aCaisse(i, j));
@@ -112,7 +109,7 @@ public class GameController {
         niveauGraphique.repaint();
     }
 
-        private void passerAuNiveauSuivant() {
+    private void passerAuNiveauSuivant() {
         int prochain = niveauGraphique.numNiveau + 1;
 
         // Vérifier s'il existe un niveau suivant
@@ -151,25 +148,60 @@ public class GameController {
         System.exit(0);
     }
 
+     private void afficherEcranFinNiveau() {
+        JOptionPane.showMessageDialog(
+                frame,
+                "Félicitations ! Vous avez terminé ce Niveau!",
+                "Niveau terminé 🎉 ",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+       
+    }
+
+     private void afficherEcranImpossible() {
+        JOptionPane.showMessageDialog(
+                frame,
+                "IMPOSSIBLE DE RESOUDRE CE NIVEAU",
+                "OUUUUPS😬 ",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+       
+    }
+
 
     //la resolution automatique
     public void resolutionAutomatique(){
         List<Niveau> niveaux = solveur.resoluble(niveauGraphique.niveau);
-        if (niveaux == null) return;
-
-        new Thread(() -> {
-            for (Niveau n : niveaux) {
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {}
-
-                    SwingUtilities.invokeLater(() -> {
-                    niveauGraphique.niveau = n;
-                    niveauGraphique.repaint();
-                });
+        if(niveaux==null){
+            if (niveaux == null) {
+            SwingUtilities.invokeLater(() -> afficherEcranImpossible());
+            passerAuNiveauSuivant();
+            return;
             }
-        }).start();
+        }
 
+        final int[] index = {0};
+
+        Timer timer = new javax.swing.Timer(300, null);
+        timer.addActionListener(e -> {
+            if (index[0] >= niveaux.size()) {
+                timer.stop();
+                afficherEcranFinNiveau();
+                passerAuNiveauSuivant();
+                return;
+            }
+
+            Niveau affichage = (Niveau) niveaux.get(index[0]).clone();
+            affichage.unPersonnage();
+
+            niveauGraphique.niveau = affichage;
+            niveauGraphique.pousseur_i = affichage.getPousseurI();
+            niveauGraphique.pousseur_j = affichage.getPousseurJ();
+            niveauGraphique.repaint();
+            
+            index[0]++;
+        });
+
+        timer.start();
     }
-
 }

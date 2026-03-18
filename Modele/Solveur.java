@@ -3,13 +3,6 @@ package Modele;
 import java.util.*;
 
 public class Solveur {
-    //ATTENTION:Supprime personnage n'a pas ete encore 
-    //utilisé , faut savoir où l'utiliser
-
-    //retourne le nombre de carte à accessibles
-    //à partir de la carte de depart (cette derniere est incluse)
-    //je pense que je viens de me rendre compte que cette fonction 
-    //ne nous sera pas utile devant
     
     //le constructeur
     public Solveur(){
@@ -57,8 +50,7 @@ public class Solveur {
         return chemin;
     }
 
-    //utilisation du plus court chemin ici(je pense)
-    //utilisation du plus court chemin ici(je pense)
+    //utilisation du plus court chemin ici
     public List<Niveau> resoluble(Niveau depart) {
         Niveau debut = (Niveau) depart.clone();
         debut.clonePersonnage();

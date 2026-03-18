@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Niveau implements Cloneable {
 
-    public static final int TAILLE_CASE = 28; // Constante centralisée
+    public static final int TAILLE_CASE = 28; 
 
     static final int VIDE    = 0;
     static final int MUR     = 1;
@@ -63,16 +63,10 @@ public class Niveau implements Cloneable {
     public boolean aMarque(int i, int j)       { return (tableau[i][j] & MARQUE) != 0; }
     
 
-
-
-    
-
-
-    @Override
+  @Override
     public Object clone() {
         try {
             Niveau n = (Niveau) super.clone();
-            // Copie profonde du tableau 2D
             n.tableau = new int[nbLignes][nbColonnes];
             for (int i = 0; i < nbLignes; i++)
                 n.tableau[i] = tableau[i].clone();
@@ -83,8 +77,8 @@ public class Niveau implements Cloneable {
     }
 
     /**********************************************************************************************/
-    //TODO: revoie les fonctions + ajouter commentaires
-
+    //FONCTIONS POUR L'IA
+   
    //renvoie les coordonnées des case Libres qui sont voisines de (x,y)
     public List<int[]> casesLibresVoisines(int x, int y) {
         List<int[]> liste = new ArrayList<>();
@@ -103,7 +97,6 @@ public class Niveau implements Cloneable {
     }
 
     //clone le personnage
-    //on en a plus besoin 
     public void clonePersonnage() {
 
         List<int[]> pile = new ArrayList<>();
@@ -137,7 +130,8 @@ public class Niveau implements Cloneable {
                 if(aPousseur(i,j)) retirePousseur(i,j);
             }
         }
-}
+    }
+    
     //renvoie la liste des coordonnees de toutes les caisses
     public List<int[]> coordonneesCaisses(){
         List<int[]> listeCaisses = new ArrayList<>();
@@ -152,7 +146,6 @@ public class Niveau implements Cloneable {
     }
 
     //determine si une caisse est poussable
-   //determine si une caisse est poussable
     public boolean poussable(int ci, int cj, int direction) {
         int di = 0, dj = 0;
 
@@ -162,22 +155,17 @@ public class Niveau implements Cloneable {
             case GAUCHE: dj = -1; break;
             case DROITE: dj =  1; break;
         }
-        
         int pi = ci - di;
         int pj = cj - dj;
-
         int ni = ci + di;
         int nj = cj + dj;
 
-        return pi >= 0 && pi < nbLignes && pj >= 0 && pj < nbColonnes
-                && ni >= 0 && ni < nbLignes && nj >= 0 && nj < nbColonnes
-                && aPousseur(pi, pj)
-                && !aMur(ni, nj) && !aCaisse(ni, nj);
+        return pi >= 0 && pi < nbLignes && pj >= 0 && pj < nbColonnes && ni >= 0 && ni < nbLignes && nj >= 0 && nj < nbColonnes
+                && aPousseur(pi, pj) && !aMur(ni, nj) && !aCaisse(ni, nj);
     }
+   
    //pousse une caisse dans la direction donnée
-   //a ton vraiment besoin de supprimer le personnage et
-   //de le mettre sur la case d'après selon la specificité 
-   //de notre algo????(A revoir)
+   
     public Niveau pousser(int i, int j, int direction) {
         Niveau nouveauNiveau = (Niveau) this.clone();
 
@@ -239,6 +227,14 @@ public class Niveau implements Cloneable {
                     return false;
                 }
         return true;
+    }
+
+    //pour garder un seul personnage visible sur la carte
+    //car en réalite on a un clonage de personnage à chaque fois 
+    //lors de l'exploration 
+    public void unPersonnage() {
+        supprimePersonnage();
+        ajoutePousseur(pousseurI, pousseurJ);
     }
 
 

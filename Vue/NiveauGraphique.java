@@ -9,13 +9,11 @@ import java.io.InputStream;
 
 public class NiveauGraphique extends JComponent {
 
-    // -----------------------------------------------------------------------
-    // Constante partagée : plus de "28" codé en dur partout
-    // -----------------------------------------------------------------------
+    
     public static final int TAILLE_CASE = Niveau.TAILLE_CASE;
 
-    // Chemin du fichier de niveaux — chargé depuis le classpath (fonctionne dans un JAR)
-    private static final String CHEMIN_NIVEAUX = "/Structures/test.txt";
+    // Chemin du fichier de niveaux
+    private static final String CHEMIN_NIVEAUX = "/fichier_niveau/niveaux.txt";
 
     // Images
     private Image But_img, Caisse_img, Caisse_sur_but_img, Mur_img, Pousseur_img, Sol_img;
@@ -67,12 +65,12 @@ public class NiveauGraphique extends JComponent {
     }
 
     // -----------------------------------------------------------------------
-    // Méthodes utilitaires statiques
+    // Méthodes utiles
     // -----------------------------------------------------------------------
 
     /**
-     * Vérifie si un numéro de niveau existe dans le fichier de niveaux.
-     * Utilisé par GameController pour détecter la fin du jeu.
+     Vérifie si un numéro de niveau existe dans le fichier de niveaux.
+     Utilisé par GameController pour détecter la fin du jeu.
      */
     public static boolean niveauExiste(int numero) {
         try {

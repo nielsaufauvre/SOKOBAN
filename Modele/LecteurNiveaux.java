@@ -4,23 +4,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Lit les niveaux Sokoban depuis un flux au format standard XSB.
- *
- * Chaque instance maintient sa propre position dans le flux.
- * Pour lire le niveau N, appeler lisProchainNiveau() N fois
- * (ou utiliser Jeu.niveau() qui gère l'itération).
- */
+/* utiliser lisProchainNiveau pour lire le niveau suivant*/
+
 public class LecteurNiveaux {
 
     private Scanner scanner;
 
-    /**
-     * Lit le prochain niveau du flux. Le Scanner est initialisé à la première
-     * invocation et réutilisé pour les appels suivants sur la même instance.
-     *
-     * @return le niveau lu, ou null si le flux est épuisé.
-     */
     public Niveau lisProchainNiveau(InputStream input) {
         if (scanner == null) {
             scanner = new Scanner(input);
@@ -37,13 +26,13 @@ public class LecteurNiveaux {
                 continue;
             }
             if (ligne.isEmpty()) {
-                break; // Séparateur de niveaux
+                break; 
             }
             lignesNiveau.add(ligne);
         }
 
         if (lignesNiveau.isEmpty()) {
-            return null; // Flux épuisé
+            return null;
         }
 
         int nbLignes   = lignesNiveau.size();
@@ -64,7 +53,7 @@ public class LecteurNiveaux {
                     case '*': n.ajouteCaisse(i, j);   n.ajouteBut(i, j);                  break;
                     case '.': n.ajouteBut(i, j);                                           break;
                     case ' ': n.videCase(i, j);                                            break;
-                    // Les autres caractères sont ignorés silencieusement
+                    
                 }
             }
         }

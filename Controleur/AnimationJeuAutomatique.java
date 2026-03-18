@@ -5,17 +5,16 @@ import javax.swing.Timer;
 import java.util.Random;
 
 /**
- * Lance des coups aléatoires à intervalle régulier (mode démo).
- * Appuyer sur 'I' pour basculer l'animation on/off.
+ * RESOLUTION IA
  */
 public class AnimationJeuAutomatique {
 
     private final NiveauGraphique niveauGraphique;
     private final EcouteurDeClavier controleur;
     private final Timer timer;
-    private final Random random = new Random();
+    //private final Random random = new Random();
 
-    private static final int[][] DIRECTIONS = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    //private static final int[][] DIRECTIONS = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
     public AnimationJeuAutomatique(NiveauGraphique vue, EcouteurDeClavier controleur) {
         this.niveauGraphique = vue;

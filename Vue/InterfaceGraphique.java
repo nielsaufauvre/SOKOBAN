@@ -6,9 +6,7 @@ import Controleur.GameController;
 import javax.swing.*;
 
 /**
- * Point d'entrée graphique. Lance le jeu au niveau passé en argument.
- *
- * Usage : java Vue.InterfaceGraphique <numéro_niveau>
+ INTERFACE GRAPHIQUE
  */
 public class InterfaceGraphique implements Runnable {
 
