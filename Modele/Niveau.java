@@ -85,7 +85,7 @@ public class Niveau implements Cloneable {
     /**********************************************************************************************/
     //TODO: revoie les fonctions + ajouter commentaires
 
-
+    //renvoie les coordonnées des case Libres qui sont voisines de (x,y)
     public List<int[]> casesLibresVoisines(int x, int y) {
         List<int[]> liste = new ArrayList<>();
         int[][] deplacements = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
@@ -101,6 +101,7 @@ public class Niveau implements Cloneable {
         return liste;
     }
 
+    //clone le personnage
     public void clonePersonnage() {
 
         List<int[]> pile = new ArrayList<>();
@@ -127,6 +128,7 @@ public class Niveau implements Cloneable {
         }
     }
 
+    //supprime un personnage
     public void supprimePersonnage(){
         for(int i=0;i<nbLignes;i++){
             for(int j=0;j<nbColonnes;j++){
@@ -135,7 +137,7 @@ public class Niveau implements Cloneable {
         }
     }
 
-
+    //renvoie la liste des coordonnees de toutes les caisses
     public List<int[]> coordonneesCaisses(){
         List<int[]> listeCaisses = new ArrayList<>();
         for(int i=0;i<nbLignes;i++){
@@ -148,7 +150,7 @@ public class Niveau implements Cloneable {
 
     }
 
-
+    //determine si une caisse est poussable
     public boolean poussable(int ci, int cj, int direction) {
         int di = 0, dj = 0;
 
@@ -174,6 +176,7 @@ public class Niveau implements Cloneable {
                 (estVide(ni, nj) || (aBut(ni, nj) && !aCaisse(ni, nj)));
     }
 
+   //pousse une caisse dans la direction donnée
     public Niveau pousser(int i, int j, int direction) {
         Niveau nouveauNiveau = (Niveau) this.clone();
 
@@ -199,10 +202,10 @@ public class Niveau implements Cloneable {
     }
 
     
-
+    //renvoie les cartesAccessibles
     public List<Niveau> cartesAccessibles() {
         List<Niveau> accessibles = new ArrayList<>();
-        List<int[]> caisses = coordonneesCaisses(); // [cite: 48]
+        List<int[]> caisses = coordonneesCaisses(); 
 
         for (int[] c : caisses) {
             for (int dir : new int[]{HAUT, BAS, GAUCHE, DROITE}) {
@@ -216,7 +219,7 @@ public class Niveau implements Cloneable {
         return accessibles;
     }
 
-
+    //le code pour la hashmap utilisée dans la classe solveur
     public String code() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < nbLignes; i++) {
@@ -226,7 +229,8 @@ public class Niveau implements Cloneable {
         }
         return sb.toString();
     }
-
+    
+    //Resolution
     public boolean estResolu() {
         for (int i = 0; i < nbLignes; i++)
             for (int j = 0; j < nbColonnes; j++)
