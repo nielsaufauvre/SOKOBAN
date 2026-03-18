@@ -5,25 +5,32 @@ import Vue.NiveauGraphique;
 import Modele.Niveau;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import Modele.Solveur;
+import java.util.List;
 
 /**
  * Classe centrale qui contient toute la logique de déplacement et de
  * changement de niveau. EcouteurDeClavier et EcouteurDeSouris délèguent
  * ici pour éviter la duplication de code.
  */
+
+//je rajoute le solveur
 public class GameController {
 
     private static final int TAILLE_CASE = 28;
 
     private JFrame frame;
     private NiveauGraphique niveauGraphique;
+    private Solveur solveur;
 
-    /** Historique des états pour le undo (Ctrl+Z). */
+    /** Historique des états pour le <refaire> ctrl+Z*/
+
     private final Deque<Niveau> historique = new ArrayDeque<>();
 
     public GameController(JFrame frame, NiveauGraphique niveauGraphique) {
         this.frame = frame;
         this.niveauGraphique = niveauGraphique;
+        this.solveur = new Solveur(); //creation d'une classe solveur
     }
 
     public NiveauGraphique getNiveauGraphique() {
@@ -143,4 +150,26 @@ public class GameController {
         );
         System.exit(0);
     }
+
+
+    //la resolution automatique
+    public void resolutionAutomatique(){
+        List<Niveau> niveaux = solveur.resoluble(niveauGraphique.niveau);
+        if (niveaux == null) return;
+
+        new Thread(() -> {
+            for (Niveau n : niveaux) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {}
+
+                    SwingUtilities.invokeLater(() -> {
+                    niveauGraphique.niveau = n;
+                    niveauGraphique.repaint();
+                });
+            }
+        }).start();
+
+    }
+
 }

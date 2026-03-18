@@ -29,7 +29,7 @@ public class EcouteurDeClavier implements KeyListener {
             case KeyEvent.VK_UP:    di = -1; break;
             case KeyEvent.VK_DOWN:  di =  1; break;
             case KeyEvent.VK_I:
-                animationJeuAutomatique.basculer();
+                animationJeuAutomatique.resoudreNiveau();
                 return;
             case KeyEvent.VK_Z:
                 if ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
@@ -43,10 +43,10 @@ public class EcouteurDeClavier implements KeyListener {
         controller.tenterDeplacement(di, dj);
     }
 
-    /** Appelé par AnimationJeuAutomatique pour jouer un coup programmatique. */
-    public void deplacer(int di, int dj) {
+    /*appeler par la fonction de resolution de niveau pour faire un deplacement*/
+    public void resolution() {
         
-        controller.tenterDeplacement(di, dj);
+        controller.resolutionAutomatique();
     }
 
     @Override public void keyReleased(KeyEvent e) {}

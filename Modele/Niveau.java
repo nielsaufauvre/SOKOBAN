@@ -85,7 +85,7 @@ public class Niveau implements Cloneable {
     /**********************************************************************************************/
     //TODO: revoie les fonctions + ajouter commentaires
 
-    //renvoie les coordonnées des case Libres qui sont voisines de (x,y)
+   //renvoie les coordonnées des case Libres qui sont voisines de (x,y)
     public List<int[]> casesLibresVoisines(int x, int y) {
         List<int[]> liste = new ArrayList<>();
         int[][] deplacements = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
@@ -94,7 +94,8 @@ public class Niveau implements Cloneable {
             int nx = x + d[0];
             int ny = y + d[1];
 
-            if (nx >= 0 && nx < nbLignes && ny >= 0 && ny < nbColonnes && estVide(nx, ny)) {
+            if (nx >= 0 && nx < nbLignes && ny >= 0 && ny < nbColonnes
+                    && !aMur(nx, ny) && !aCaisse(nx, ny)) {
                 liste.add(new int[]{nx, ny});
             }
         }
@@ -102,6 +103,7 @@ public class Niveau implements Cloneable {
     }
 
     //clone le personnage
+    //on en a plus besoin 
     public void clonePersonnage() {
 
         List<int[]> pile = new ArrayList<>();
@@ -132,11 +134,10 @@ public class Niveau implements Cloneable {
     public void supprimePersonnage(){
         for(int i=0;i<nbLignes;i++){
             for(int j=0;j<nbColonnes;j++){
-                if(aPousseur(i,j)) videCase(i,j);
+                if(aPousseur(i,j)) retirePousseur(i,j);
             }
         }
-    }
-
+}
     //renvoie la liste des coordonnees de toutes les caisses
     public List<int[]> coordonneesCaisses(){
         List<int[]> listeCaisses = new ArrayList<>();
@@ -151,6 +152,7 @@ public class Niveau implements Cloneable {
     }
 
     //determine si une caisse est poussable
+   //determine si une caisse est poussable
     public boolean poussable(int ci, int cj, int direction) {
         int di = 0, dj = 0;
 
@@ -160,23 +162,22 @@ public class Niveau implements Cloneable {
             case GAUCHE: dj = -1; break;
             case DROITE: dj =  1; break;
         }
-
-
+        
         int pi = ci - di;
         int pj = cj - dj;
 
         int ni = ci + di;
         int nj = cj + dj;
 
-
-
-
-        return aPousseur(pi, pj) &&
-                ni >= 0 && ni < nbLignes && nj >= 0 && nj < nbColonnes &&
-                (estVide(ni, nj) || (aBut(ni, nj) && !aCaisse(ni, nj)));
+        return pi >= 0 && pi < nbLignes && pj >= 0 && pj < nbColonnes
+                && ni >= 0 && ni < nbLignes && nj >= 0 && nj < nbColonnes
+                && aPousseur(pi, pj)
+                && !aMur(ni, nj) && !aCaisse(ni, nj);
     }
-
    //pousse une caisse dans la direction donnée
+   //a ton vraiment besoin de supprimer le personnage et
+   //de le mettre sur la case d'après selon la specificité 
+   //de notre algo????(A revoir)
     public Niveau pousser(int i, int j, int direction) {
         Niveau nouveauNiveau = (Niveau) this.clone();
 

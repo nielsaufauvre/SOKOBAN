@@ -20,7 +20,7 @@ public class AnimationJeuAutomatique {
     public AnimationJeuAutomatique(NiveauGraphique vue, EcouteurDeClavier controleur) {
         this.niveauGraphique = vue;
         this.controleur = controleur;
-        this.timer = new Timer(500, e -> jouerCoupAleatoire());
+        this.timer = new Timer(500, e -> resoudreNiveau());
     }
 
     public void basculer() {
@@ -31,9 +31,8 @@ public class AnimationJeuAutomatique {
         return timer.isRunning();
     }
 
-    private void jouerCoupAleatoire() {
-        int[] d = DIRECTIONS[random.nextInt(DIRECTIONS.length)];
+    public void resoudreNiveau() {
 
-        controleur.deplacer(d[0], d[1]);
+        controleur.resolution();
     }
 }
