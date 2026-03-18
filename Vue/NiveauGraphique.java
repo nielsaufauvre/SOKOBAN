@@ -13,7 +13,7 @@ public class NiveauGraphique extends JComponent {
     public static final int TAILLE_CASE = Niveau.TAILLE_CASE;
 
     // Chemin du fichier de niveaux
-    private static final String CHEMIN_NIVEAUX = "/fichier_niveau/niveaux.txt";
+    private static final String CHEMIN_NIVEAUX = "../fichier_niveaux/niveaux.txt";
 
     // Images
     private Image But_img, Caisse_img, Caisse_sur_but_img, Mur_img, Pousseur_img, Sol_img;
@@ -61,6 +61,7 @@ public class NiveauGraphique extends JComponent {
 
         } catch (Exception e) {
             afficherErreur("Erreur lors du chargement du niveau " + numero_niveau + " : " + e.getMessage());
+            return;
         }
     }
 

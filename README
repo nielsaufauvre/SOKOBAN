@@ -1,0 +1,6 @@
+#BUGS repertoriés
+    si on a plus de caisses que de niveaux il le resout 
+    pas de changement de numero de niveau sur l'affichage
+    si on joue à la normale , pas d'affichage du message gagné
+    #Ajoutons aussi une option pour permettre au joueur de passer au 
+        niveau suivant même s'il l'a pas résolu
