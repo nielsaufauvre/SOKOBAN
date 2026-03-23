@@ -170,7 +170,12 @@ public class GameController {
 
     //la resolution automatique
     public void resolutionAutomatique(){
-        List<Niveau> niveaux = solveur.resoluble(niveauGraphique.niveau);
+        //on decommente pour utiliser la resolution automatique avec "resoluble(cas particulier de Dijkstra)"
+        //List<Niveau> niveaux = solveur.resoluble(niveauGraphique.niveau);
+
+        //utilisation de A*
+        List<Niveau> niveaux = solveur.aStar(niveauGraphique.niveau);
+
         if(niveaux==null){
             if (niveaux == null) {
             SwingUtilities.invokeLater(() -> afficherEcranImpossible());

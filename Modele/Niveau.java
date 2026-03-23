@@ -197,11 +197,11 @@ public class Niveau implements Cloneable {
         List<int[]> caisses = coordonneesCaisses(); 
 
         for (int[] c : caisses) {
-            for (int dir : new int[]{HAUT, BAS, GAUCHE, DROITE}) {
-                if (poussable(c[0], c[1], dir)) {
-                    Niveau n = pousser(c[0], c[1], dir);
-                    n.clonePersonnage();
-                    accessibles.add(n);
+            for (int direction : new int[]{HAUT, BAS, GAUCHE, DROITE}) {
+                if (poussable(c[0], c[1], direction)) {
+                    Niveau niveau = pousser(c[0], c[1], direction);
+                    niveau.clonePersonnage();
+                    accessibles.add(niveau);
                 }
             }
         }

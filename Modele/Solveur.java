@@ -162,7 +162,9 @@ public class Solveur {
         return listVoisins;
     }
 
-    public boolean dansGrille(Niveau depart, int i, int j) {
+    //Verifier toujours qu'on est dans la grille parce que pour les case en extrémité
+    // on risque de sortir
+    public boolean estDansGrille(Niveau depart, int i, int j) {
         return i >= 0 && i < depart.nbLignes && j >= 0 && j < depart.nbColonnes;
     }
 
@@ -200,7 +202,7 @@ public class Solveur {
                 int ligneVoisin = voisins.get(i).getI();
                 int colonneVoisin = voisins.get(i).getJ();
 
-                if (dansGrille(depart, ligneVoisin, colonneVoisin)
+                if (estDansGrille(depart, ligneVoisin, colonneVoisin)
                         && dist[ligneVoisin][colonneVoisin] == INFINI) {
                     dist[ligneVoisin][colonneVoisin] = dist[ligne][colonne] + 1;
                     actifs.add(voisins.get(i));
@@ -211,13 +213,24 @@ public class Solveur {
         return dist;
     }
 
-    public int coutHeuristique(Niveau courant, int[][] distBut) {
-        int h = 0;
+   public int coutHeuristique(Niveau courant, int[][] distBut) {
+    int cout = 0;
 
+    List<int[]> caisses = courant.coordonneesCaisses();
 
-        return h;
+    for (int[] caisse : caisses) {
+        int i = caisse[0];
+        int j = caisse[1];
+
+        if (distBut[i][j] == INFINI) {
+            return INFINI;
+        }
+
+        cout += distBut[i][j];
     }
-    
+
+    return cout;
+    }
 
     public List<Niveau> aStar(Niveau depart) {
         Niveau debut = (Niveau) depart.clone();
@@ -229,9 +242,10 @@ public class Solveur {
                 Comparator.comparingInt(NiveauPriorite::getPriorite)
         );
 
-        Map<String, Niveau> dejavu = new HashMap<>();
-        Map<String, Integer> distance = new HashMap<>();
+        Map<String, Niveau> dejavu = new HashMap<>(); //on associe à chaque état son predecesseur
+        Map<String, Integer> distance = new HashMap<>(); //à chaque état son coût
 
+       //initialisation
         String codeInitial = debut.code();
         distance.put(codeInitial, 0);
         dejavu.put(codeInitial, null);
@@ -242,7 +256,7 @@ public class Solveur {
         while (!actifs.isEmpty()) {
             Niveau courant = actifs.poll().getNiveau();
             String codeCourant = courant.code();
-            int gCourant = distance.get(codeCourant);
+            int gCourant = distance.get(codeCourant); //c'est le cout parcouru depuis le départ(la fonction g)
 
             if (courant.estResolu()) {
                 System.out.print("Nombre itérations: " + dejavu.size());
@@ -251,14 +265,15 @@ public class Solveur {
 
             for (Niveau suivant : courant.cartesAccessibles()) {
                 String codeSuivant = suivant.code();
-                int nouveauG = gCourant + 1;
+                int nouveauG = gCourant + 1; //la nouvelle distance parcouruue depuis le debut
 
                 if (!distance.containsKey(codeSuivant) || nouveauG < distance.get(codeSuivant)) {
+                    //mise à jour si jamais vu ou je trouve un chemin meilleur
                     distance.put(codeSuivant, nouveauG);
                     dejavu.put(codeSuivant, courant);
 
                     int h = coutHeuristique(suivant, distBut);
-                    int f = nouveauG + h;
+                    int f = nouveauG + h; //ça revient a  la formule f=g+h (f etant la prioritz dans la file aussi )
 
                     actifs.add(new NiveauPriorite(suivant, f));
                 }
