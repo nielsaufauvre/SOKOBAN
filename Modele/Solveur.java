@@ -1,7 +1,5 @@
 package Modele;
 
-import java.util.PriorityQueue;
-
 import java.util.*;
 
 class Couple{
@@ -15,8 +13,8 @@ class Couple{
 
     public int getI(){
         return i;
-
     }
+
     public int getJ(){
         return j;
     }
@@ -30,6 +28,7 @@ class CouplePriorite{
         this.c = c;
         this.priorite = priorite;
     }
+
     public CouplePriorite(){
     }
 
@@ -40,27 +39,44 @@ class CouplePriorite{
     public Couple getCouple(){
         return  this.c;
     }
+}
 
+class NiveauPriorite {
+    Niveau niveau;
+    int priorite;
+
+    public NiveauPriorite(Niveau niveau, int priorite) {
+        this.niveau = niveau;
+        this.priorite = priorite;
+    }
+
+    public Niveau getNiveau() {
+        return niveau;
+    }
+
+    public int getPriorite() {
+        return priorite;
+    }
 }
 
 public class Solveur {
 
-    int INFINI =  1000000 ;
-    int MUR = -1 ;
-    
+    int INFINI = 1000000;
+    int MUR = -1;
+
     //le constructeur
     public Solveur(){
 
     }
-    
+
     public int nombrePositions(Niveau depart) {
         Niveau debut = (Niveau)depart.clone();
         debut.clonePersonnage();
         Deque<Niveau> actifs = new ArrayDeque<>();
         Map<String, Niveau> dejavu = new HashMap<String, Niveau>();
 
-        String codeInitial = depart.code();
-        actifs.push(depart);
+        String codeInitial = debut.code();
+        actifs.push(debut);
         dejavu.put(codeInitial, null);
 
         while (!actifs.isEmpty()) {
@@ -95,6 +111,7 @@ public class Solveur {
     }
 
     //utilisation du plus court chemin ici
+    //on a implemente ça avant l'heuristique
     public List<Niveau> resoluble(Niveau depart) {
         Niveau debut = (Niveau) depart.clone();
         debut.clonePersonnage();
@@ -136,32 +153,34 @@ public class Solveur {
         Couple c2 = new Couple(i + 1, j);
         Couple c3 = new Couple(i, j - 1);
         Couple c4 = new Couple(i, j + 1);
-        
+
         listVoisins.add(c1);
         listVoisins.add(c2);
         listVoisins.add(c3);
         listVoisins.add(c4);
 
-        return listVoisins; 
+        return listVoisins;
     }
 
+    public boolean dansGrille(Niveau depart, int i, int j) {
+        return i >= 0 && i < depart.nbLignes && j >= 0 && j < depart.nbColonnes;
+    }
 
-    public void heuristique(Niveau depart){
+    public int[][] heuristique(Niveau depart){
         //le tableau à retourner 
         int [][] dist = new int [depart.nbLignes][depart.nbColonnes];
 
-        List<CouplePriorite> actifs = new ArrayList<CouplePriorite>();
+        Deque<Couple> actifs = new ArrayDeque<Couple>();
 
-        for (int i = 0; i <depart.nbLignes; i++ ){
-            for (int j = 0; j<depart.nbColonnes; j++){
+        for (int i = 0; i < depart.nbLignes; i++ ){
+            for (int j = 0; j < depart.nbColonnes; j++){
                 if (depart.aBut(i,j)){
                     dist[i][j] = 0;
                     Couple couple = new Couple(i,j);
-                    actifs.add(new CouplePriorite(couple,0));//initialisation à 0
-
+                    actifs.add(couple);//initialisation à 0
                 }
                 else if (depart.aMur(i,j)){
-                    dist[i][j] = MUR ; //-1 pour les murs
+                    dist[i][j] = MUR; //-1 pour les murs
                 }
                 else {
                     dist[i][j] = INFINI; //valeur qu'on suppose à infini
@@ -170,50 +189,83 @@ public class Solveur {
         }
 
         while(!actifs.isEmpty()){
-            //TODO: recherche de la priorité minimale
-            int max = 1000000;
-            int indice = -1;
-            for (int i=0; i<actifs.size(); i++){
-               if(actifs.get(i).priorite < max){
-                   max = actifs.get(i).priorite;
-                   indice = i;
-               }
-            }
-            //extraction
-            Couple element = actifs.get(indice).getCouple();
-             int ligne = element.getI();
-             int colonne = element.getJ();
+            Couple element = actifs.remove();
+            int ligne = element.getI();
+            int colonne = element.getJ();
 
-             int ligneVoisin;
-             int colonneVoisin;
+            //recuperer la liste des voisisn 
+            List<Couple> voisins = getVoisins(ligne , colonne);
 
-             //recuperer la liste des voisisn 
-             List<Couple> voisins = getVoisins(ligne , colonne );
-             
-             for(int i=0; i<voisins.size(); i++){
-                
-                ligneVoisin = voisins.get(i).getI();
-                colonneVoisin = voisins.get(i).getJ();
-                
-                if(dist[ligneVoisin][colonneVoisin] == INFINI ){
-                    actifs.add( voisins.get(i), INFINI)
-                    dist[ligneVoisin][colonneVoisin] +=1;
+            for(int i = 0; i < voisins.size(); i++){
+                int ligneVoisin = voisins.get(i).getI();
+                int colonneVoisin = voisins.get(i).getJ();
+
+                if (dansGrille(depart, ligneVoisin, colonneVoisin)
+                        && dist[ligneVoisin][colonneVoisin] == INFINI) {
+                    dist[ligneVoisin][colonneVoisin] = dist[ligne][colonne] + 1;
+                    actifs.add(voisins.get(i));
                 }
-                   
-
-             }
-
+            }
         }
 
+        return dist;
     }
 
-    public void aStar()
-        
+    public int coutHeuristique(Niveau courant, int[][] distBut) {
+        int h = 0;
 
 
-   
+        return h;
+    }
+    
 
-   
+    public List<Niveau> aStar(Niveau depart) {
+        Niveau debut = (Niveau) depart.clone();
+        debut.clonePersonnage();
 
+        int[][] distBut = heuristique(debut);
 
+        PriorityQueue<NiveauPriorite> actifs = new PriorityQueue<>(
+                Comparator.comparingInt(NiveauPriorite::getPriorite)
+        );
+
+        Map<String, Niveau> dejavu = new HashMap<>();
+        Map<String, Integer> distance = new HashMap<>();
+
+        String codeInitial = debut.code();
+        distance.put(codeInitial, 0);
+        dejavu.put(codeInitial, null);
+
+        int hInitial = coutHeuristique(debut, distBut);
+        actifs.add(new NiveauPriorite(debut, hInitial));
+
+        while (!actifs.isEmpty()) {
+            Niveau courant = actifs.poll().getNiveau();
+            String codeCourant = courant.code();
+            int gCourant = distance.get(codeCourant);
+
+            if (courant.estResolu()) {
+                System.out.print("Nombre itérations: " + dejavu.size());
+                return chemin(dejavu, courant);
+            }
+
+            for (Niveau suivant : courant.cartesAccessibles()) {
+                String codeSuivant = suivant.code();
+                int nouveauG = gCourant + 1;
+
+                if (!distance.containsKey(codeSuivant) || nouveauG < distance.get(codeSuivant)) {
+                    distance.put(codeSuivant, nouveauG);
+                    dejavu.put(codeSuivant, courant);
+
+                    int h = coutHeuristique(suivant, distBut);
+                    int f = nouveauG + h;
+
+                    actifs.add(new NiveauPriorite(suivant, f));
+                }
+            }
+        }
+
+        System.out.print("Impossible, Nombre itérations: " + dejavu.size());
+        return null;
+    }
 }
