@@ -1,6 +1,47 @@
 package Modele;
 
+import java.util.PriorityQueue;
+
 import java.util.*;
+
+class Couple{
+    int i;
+    int j;
+
+    public Couple(int i, int j){
+        this.i = i;
+        this.j = j;
+    }
+
+    public int getI(){
+        return i;
+
+    }
+    public int getJ(){
+        return j;
+    }
+}
+
+class CouplePriorite{
+    Couple c;
+    int priorite;
+
+    public CouplePriorite(Couple c, int priorite){
+        this.c = c;
+        this.priorite = priorite;
+    }
+    public CouplePriorite(){
+    }
+
+    public int getPriorite(){
+        return this.priorite;
+    }
+
+    public Couple getCouple(){
+        return  this.c;
+    }
+
+}
 
 public class Solveur {
     
@@ -59,6 +100,7 @@ public class Solveur {
         Map<String, Niveau> dejavu = new HashMap<String, Niveau>();
 
         String codeInitial = debut.code();
+
         actifs.add(debut);
         dejavu.put(codeInitial, null);
 
@@ -82,6 +124,73 @@ public class Solveur {
         //le niveau ne peut pas être resolu donc
         System.out.print("Impossible, Nombre itérations: " + dejavu.size());
         return null;
+    }
+
+    public List<Couple> getVoisins(int i , int j) {
+        List<Couple> listVoisins = new ArrayList<Couple>();
+        Couple c1 = new Couple(i - 1, j);
+        Couple c1 = new Couple(i + 1, j);
+        Couple c1 = new Couple(i, j - 1);
+
+        Couple c1 = new Couple(i, j + 1);
+        listVoisins.add(c1)
+    }
+    public void heuristique(Niveau depart){
+        int [][] tab = new int [depart.nbLignes][depart.nbColonnes];
+
+        List<CouplePriorite> actifs = new ArrayList<CouplePriorite>();
+
+        for (int i = 0; i <depart.nbLignes; i++ ){
+            for (int j = 0; j<depart.nbColonnes; j++){
+                if (depart.aBut(i,j)){
+                    tab[i][j] = 0;
+                    Couple couple = new Couple(i,j);
+                    actifs.add(new CouplePriorite(couple,0));
+
+                }
+                else if (depart.aMur(i,j)){
+                    tab[i][j] = -1;
+                }
+                else {
+                    tab[i][j] = 1000000;
+                }
+            }
+        }
+
+        while(!actifs.isEmpty()){
+            //TODO: recherche de la priorité minimale
+            int max = 1000000;
+            int indice = -1;
+            for (int i=0; i<actifs.size(); i++){
+               if(actifs.get(i).priorite < max){
+                   max = actifs.get(i).priorite;
+                   indice = i;
+               }
+            }
+            //extraction
+            Couple element = actifs.get(indice).getCouple();
+             int ligne = element.getI();
+             int colonne = element.getJ();
+
+             int ligneVoisin;
+             int colonneVoisin;
+             for(int i=0; i<4;i++){
+                 //vsin HAUT
+                 lig
+
+             }
+
+
+
+
+            for (){
+                //TODO: rajouter voisine avec distance infinie à actifs
+
+
+
+            }
+        }
+
     }
         
 
