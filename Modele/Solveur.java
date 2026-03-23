@@ -44,6 +44,9 @@ class CouplePriorite{
 }
 
 public class Solveur {
+
+    int INFINI =  1000000 ;
+    int MUR = -1 ;
     
     //le constructeur
     public Solveur(){
@@ -126,33 +129,42 @@ public class Solveur {
         return null;
     }
 
+    /*fonction pour avoir la liste des voisisn de (i , j)*/
     public List<Couple> getVoisins(int i , int j) {
         List<Couple> listVoisins = new ArrayList<Couple>();
         Couple c1 = new Couple(i - 1, j);
-        Couple c1 = new Couple(i + 1, j);
-        Couple c1 = new Couple(i, j - 1);
+        Couple c2 = new Couple(i + 1, j);
+        Couple c3 = new Couple(i, j - 1);
+        Couple c4 = new Couple(i, j + 1);
+        
+        listVoisins.add(c1);
+        listVoisins.add(c2);
+        listVoisins.add(c3);
+        listVoisins.add(c4);
 
-        Couple c1 = new Couple(i, j + 1);
-        listVoisins.add(c1)
+        return listVoisins; 
     }
+
+
     public void heuristique(Niveau depart){
-        int [][] tab = new int [depart.nbLignes][depart.nbColonnes];
+        //le tableau à retourner 
+        int [][] dist = new int [depart.nbLignes][depart.nbColonnes];
 
         List<CouplePriorite> actifs = new ArrayList<CouplePriorite>();
 
         for (int i = 0; i <depart.nbLignes; i++ ){
             for (int j = 0; j<depart.nbColonnes; j++){
                 if (depart.aBut(i,j)){
-                    tab[i][j] = 0;
+                    dist[i][j] = 0;
                     Couple couple = new Couple(i,j);
-                    actifs.add(new CouplePriorite(couple,0));
+                    actifs.add(new CouplePriorite(couple,0));//initialisation à 0
 
                 }
                 else if (depart.aMur(i,j)){
-                    tab[i][j] = -1;
+                    dist[i][j] = MUR ; //-1 pour les murs
                 }
                 else {
-                    tab[i][j] = 1000000;
+                    dist[i][j] = INFINI; //valeur qu'on suppose à infini
                 }
             }
         }
@@ -174,24 +186,28 @@ public class Solveur {
 
              int ligneVoisin;
              int colonneVoisin;
-             for(int i=0; i<4;i++){
-                 //vsin HAUT
-                 lig
+
+             //recuperer la liste des voisisn 
+             List<Couple> voisins = getVoisins(ligne , colonne );
+             
+             for(int i=0; i<voisins.size(); i++){
+                
+                ligneVoisin = voisins.get(i).getI();
+                colonneVoisin = voisins.get(i).getJ();
+                
+                if(dist[ligneVoisin][colonneVoisin] == INFINI ){
+                    actifs.add( voisins.get(i), INFINI)
+                    dist[ligneVoisin][colonneVoisin] +=1;
+                }
+                   
 
              }
 
-
-
-
-            for (){
-                //TODO: rajouter voisine avec distance infinie à actifs
-
-
-
-            }
         }
 
     }
+
+    public void aStar()
         
 
 
