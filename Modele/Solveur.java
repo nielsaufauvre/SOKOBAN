@@ -29,8 +29,7 @@ class CouplePriorite{
         this.priorite = priorite;
     }
 
-    public CouplePriorite(){
-    }
+   
 
     public int getPriorite(){
         return this.priorite;
@@ -162,7 +161,7 @@ public class Solveur {
         return listVoisins;
     }
 
-    //Verifier toujours qu'on est dans la grille parce que pour les case en extrémité
+    //Verifier toujours qu'on est dans la grille parce que pour les cases en extrémité
     // on risque de sortir
     public boolean estDansGrille(Niveau depart, int i, int j) {
         return i >= 0 && i < depart.nbLignes && j >= 0 && j < depart.nbColonnes;
