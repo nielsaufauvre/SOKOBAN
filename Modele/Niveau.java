@@ -261,7 +261,7 @@ public class Niveau implements Cloneable {
     //car en réalite on a un clonage de personnage à chaque fois 
     //lors de l'exploration 
     public void unPersonnage() {
-        supprimePersonnage();
+       supprimePersonnage();
         ajoutePousseur(pousseurI, pousseurJ);
     }
 
