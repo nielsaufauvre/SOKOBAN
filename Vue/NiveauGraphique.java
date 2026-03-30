@@ -28,9 +28,7 @@ public class NiveauGraphique extends JComponent {
     private int dirI, dirJ;
     private boolean caisseDeplacee = false;
 
-    // -----------------------------------------------------------------------
     // Constructeur
-    // -----------------------------------------------------------------------
 
     public NiveauGraphique(int numero_niveau) {
         numNiveau = numero_niveau;
@@ -65,10 +63,7 @@ public class NiveauGraphique extends JComponent {
         }
     }
 
-    // -----------------------------------------------------------------------
-    // Méthodes utiles
-    // -----------------------------------------------------------------------
-
+   // MÉTHODES UTILES
     /**
      Vérifie si un numéro de niveau existe dans le fichier de niveaux.
      Utilisé par GameController pour détecter la fin du jeu.
@@ -95,9 +90,7 @@ public class NiveauGraphique extends JComponent {
         JOptionPane.showMessageDialog(null, message, "Erreur", JOptionPane.ERROR_MESSAGE);
     }
 
-    // -----------------------------------------------------------------------
-    // Animation
-    // -----------------------------------------------------------------------
+   // L'ANIMATION
 
     public void demarrerAnimation(int di, int dj, boolean pousseCaisse) {
         this.dirI = di;
@@ -118,9 +111,7 @@ public class NiveauGraphique extends JComponent {
         timer.start();
     }
 
-    // -----------------------------------------------------------------------
-    // Rendu
-    // -----------------------------------------------------------------------
+   // Rendu
 
     @Override
     public Dimension getPreferredSize() {
