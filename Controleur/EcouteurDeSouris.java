@@ -2,6 +2,7 @@ package Controleur;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import Vue.NiveauGraphique;
 
 public class EcouteurDeSouris implements MouseListener {
 
@@ -13,16 +14,23 @@ public class EcouteurDeSouris implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		int tailleCase = controller.getTailleCase();
-		int ni = e.getY() / tailleCase;
-		int nj = e.getX() / tailleCase;
-		int pi = controller.getNiveauGraphique().niveau.getPousseurI();
-		int pj = controller.getNiveauGraphique().niveau.getPousseurJ();
+		NiveauGraphique vue = controller.getNiveauGraphique();
+
+		int tailleCase = vue.getTailleCaseActuelle();
+		int dx = vue.getDecalageX();
+		int dy = vue.getDecalageY();
+
+		// Conversion des coordonnées écran en coordonnées grille (i, j)
+		int nj = (e.getX() - dx) / tailleCase;
+		int ni = (e.getY() - dy) / tailleCase;
+
+		int pi = vue.niveau.getPousseurI();
+		int pj = vue.niveau.getPousseurJ();
 
 		int di = ni - pi;
 		int dj = nj - pj;
 
-		// Autoriser uniquement les déplacements d'une case (4 directions)
+		// Autoriser uniquement les déplacements adjacents d'une case
 		if (Math.abs(di) + Math.abs(dj) != 1) return;
 
 		controller.tenterDeplacement(di, dj);

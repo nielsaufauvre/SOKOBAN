@@ -4,10 +4,8 @@ import Controleur.EcouteurDeClavier;
 import Controleur.EcouteurDeSouris;
 import Controleur.GameController;
 import javax.swing.*;
+import java.awt.*;
 
-/**
- INTERFACE GRAPHIQUE
- */
 public class InterfaceGraphique implements Runnable {
 
     private final int numeroNiveau;
@@ -21,12 +19,14 @@ public class InterfaceGraphique implements Runnable {
         JFrame frame = new JFrame("Sokoban — Niveau " + numeroNiveau);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Mode plein écran sans bordures
+        frame.setUndecorated(true);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         NiveauGraphique niveauGraphique = new NiveauGraphique(numeroNiveau);
         frame.add(niveauGraphique);
 
-        // Un seul GameController partagé par les deux écouteurs
         GameController controller = new GameController(frame, niveauGraphique);
-
         EcouteurDeClavier clavier = new EcouteurDeClavier(frame, niveauGraphique, controller);
         EcouteurDeSouris  souris  = new EcouteurDeSouris(controller);
 
@@ -34,31 +34,20 @@ public class InterfaceGraphique implements Runnable {
         niveauGraphique.addMouseListener(souris);
         niveauGraphique.setFocusable(true);
 
-        // pack() calcule la taille optimale d'après getPreferredSize() au lieu d'un setSize() approximatif
-        frame.pack();
-        frame.setLocationRelativeTo(null); // Centrer à l'écran
         frame.setVisible(true);
-
         SwingUtilities.invokeLater(() -> niveauGraphique.requestFocusInWindow());
     }
 
     public static void main(String[] args) {
         if (args.length == 0) {
             System.err.println("Usage : java Vue.InterfaceGraphique <numéro_niveau>");
-            System.err.println("Exemple : java Vue.InterfaceGraphique 1");
             System.exit(1);
         }
-
-        int niveau;
         try {
-            niveau = Integer.parseInt(args[0]);
-            if (niveau < 1) throw new NumberFormatException();
+            int niveau = Integer.parseInt(args[0]);
+            SwingUtilities.invokeLater(new InterfaceGraphique(niveau));
         } catch (NumberFormatException e) {
-            System.err.println("Erreur : le numéro de niveau doit être un entier positif.");
-            System.exit(1);
-            return;
+            System.err.println("Erreur : niveau invalide.");
         }
-
-        SwingUtilities.invokeLater(new InterfaceGraphique(niveau));
     }
 }
