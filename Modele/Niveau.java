@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Niveau implements Cloneable {
 
-    public static final int TAILLE_CASE = 28; 
+    public static final int TAILLE_CASE = 28;
 
     static final int VIDE    = 0;
     static final int MUR     = 1;
@@ -61,9 +61,8 @@ public class Niveau implements Cloneable {
     public void    placerMarque(int i, int j)  { tableau[i][j] |=  MARQUE; }
     public void    enleverMarque(int i, int j) { tableau[i][j] &= ~MARQUE; }
     public boolean aMarque(int i, int j)       { return (tableau[i][j] & MARQUE) != 0; }
-    
 
-  @Override
+    @Override
     public Object clone() {
         try {
             Niveau n = (Niveau) super.clone();
@@ -78,8 +77,7 @@ public class Niveau implements Cloneable {
 
     /**********************************************************************************************/
     //FONCTIONS POUR L'IA
-   
-   //renvoie les coordonnées des case Libres qui sont voisines de (x,y)
+
     public List<int[]> casesLibresVoisines(int x, int y) {
         List<int[]> liste = new ArrayList<>();
         int[][] deplacements = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
@@ -96,7 +94,6 @@ public class Niveau implements Cloneable {
         return liste;
     }
 
-    //clone le personnage
     public void clonePersonnage() {
 
         List<int[]> pile = new ArrayList<>();
@@ -123,7 +120,6 @@ public class Niveau implements Cloneable {
         }
     }
 
-    //supprime un personnage
     public void supprimePersonnage(){
         for(int i=0;i<nbLignes;i++){
             for(int j=0;j<nbColonnes;j++){
@@ -131,8 +127,7 @@ public class Niveau implements Cloneable {
             }
         }
     }
-    
-    //renvoie la liste des coordonnees de toutes les caisses
+
     public List<int[]> coordonneesCaisses(){
         List<int[]> listeCaisses = new ArrayList<>();
         for(int i=0;i<nbLignes;i++){
@@ -140,12 +135,9 @@ public class Niveau implements Cloneable {
                 if(aCaisse(i,j)) listeCaisses.add(new int [] {i , j});
             }
         }
-
         return listeCaisses;
-
     }
 
-    //determine si une caisse est poussable
     public boolean poussable(int ci, int cj, int direction) {
         int di = 0, dj = 0;
 
@@ -163,9 +155,7 @@ public class Niveau implements Cloneable {
         return pi >= 0 && pi < nbLignes && pj >= 0 && pj < nbColonnes && ni >= 0 && ni < nbLignes && nj >= 0 && nj < nbColonnes
                 && aPousseur(pi, pj) && !aMur(ni, nj) && !aCaisse(ni, nj);
     }
-   
-   //pousse une caisse dans la direction donnée
-   
+
     public Niveau pousser(int i, int j, int direction) {
         Niveau nouveauNiveau = (Niveau) this.clone();
 
@@ -180,7 +170,6 @@ public class Niveau implements Cloneable {
         int ni = i + di;
         int nj = j + dj;
 
-
         nouveauNiveau.supprimePersonnage();
         nouveauNiveau.retireCaisse(i, j);
         nouveauNiveau.ajouteCaisse(ni, nj);
@@ -190,11 +179,17 @@ public class Niveau implements Cloneable {
         return nouveauNiveau;
     }
 
-    
-    //renvoie les cartesAccessibles
+    public Niveau deplacerPousseur(int ni, int nj) {
+        Niveau n = (Niveau) this.clone();
+        n.supprimePersonnage();
+        n.ajoutePousseur(ni, nj);
+        n.setPositionPousseur(ni, nj);
+        return n;
+    }
+
     public List<Niveau> cartesAccessibles() {
         List<Niveau> accessibles = new ArrayList<>();
-        List<int[]> caisses = coordonneesCaisses(); 
+        List<int[]> caisses = coordonneesCaisses();
 
         for (int[] c : caisses) {
             for (int direction : new int[]{HAUT, BAS, GAUCHE, DROITE}) {
@@ -208,7 +203,6 @@ public class Niveau implements Cloneable {
         return accessibles;
     }
 
-    //le code pour la hashmap utilisée dans la classe solveur
     public String code() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < nbLignes; i++) {
@@ -219,7 +213,6 @@ public class Niveau implements Cloneable {
         return sb.toString();
     }
 
-
     private int nbButs(){
         int compteur=0;
         for (int i = 0; i < nbLignes; i++){
@@ -227,8 +220,7 @@ public class Niveau implements Cloneable {
                 if(aBut(i,j)) compteur++;
             }
         }
-            
-        return compteur;       
+        return compteur;
     }
 
     private int nbCaisses(){
@@ -238,14 +230,10 @@ public class Niveau implements Cloneable {
                 if(aCaisse(i,j)) compteur++;
             }
         }
-            
-        return compteur;   
-
+        return compteur;
     }
-    
-    //Resolution
+
     public boolean estResolu() {
-        //verifier d'abord que le nombre de caisses==nombre de buts
         int nombreCaisses = nbCaisses();
         int nombreButs = nbButs();
         if(nombreCaisses != nombreButs ) return false;
@@ -257,16 +245,8 @@ public class Niveau implements Cloneable {
         return true;
     }
 
-    //pour garder un seul personnage visible sur la carte
-    //car en réalite on a un clonage de personnage à chaque fois 
-    //lors de l'exploration 
     public void unPersonnage() {
-       supprimePersonnage();
+        supprimePersonnage();
         ajoutePousseur(pousseurI, pousseurJ);
     }
-
-
-
-
-
 }

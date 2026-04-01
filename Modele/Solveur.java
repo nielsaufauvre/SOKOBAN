@@ -29,7 +29,8 @@ class CouplePriorite{
         this.priorite = priorite;
     }
 
-   
+    public CouplePriorite(){
+    }
 
     public int getPriorite(){
         return this.priorite;
@@ -63,7 +64,6 @@ public class Solveur {
     int INFINI = 1000000;
     int MUR = -1;
 
-    //le constructeur
     public Solveur(){
 
     }
@@ -93,24 +93,119 @@ public class Solveur {
         return dejavu.size();
     }
 
-    //reconstruction du chemin à partir de la carteGagnante
-    //elle nous permet de remonter les predecesseurs
-    //la liste de retour contient les chemin à partir du debut.    
-    //jusqu'à la carte gagnante
-    public List<Niveau> chemin(Map<String,Niveau> dejaVu, Niveau carteGagnante){
-        List<Niveau> chemin = new ArrayList<>();
+    public List<Niveau> cheminPousseur(Niveau etat, int cibleI, int cibleJ) {
+        Niveau debut = (Niveau) etat.clone();
+        debut.supprimePersonnage();
+        debut.ajoutePousseur(etat.pousseurI, etat.pousseurJ);
+        debut.setPositionPousseur(etat.pousseurI, etat.pousseurJ);
+
+        Deque<Niveau> actifs = new ArrayDeque<>();
+        Map<String, Niveau> dejavu = new HashMap<>();
+
+        String codeInitial = debut.pousseurI + "," + debut.pousseurJ;
+        actifs.add(debut);
+        dejavu.put(codeInitial, null);
+
+        while (!actifs.isEmpty()) {
+            Niveau courant = actifs.remove();
+
+            if (courant.pousseurI == cibleI && courant.pousseurJ == cibleJ) {
+                List<Niveau> chemin = new ArrayList<>();
+                Niveau c = courant;
+                while (c != null) {
+                    chemin.add(0, c);
+                    String code = c.pousseurI + "," + c.pousseurJ;
+                    c = dejavu.get(code);
+                }
+                return chemin;
+            }
+
+            int[][] dirs = {{-1,0},{1,0},{0,-1},{0,1}};
+            for (int[] d : dirs) {
+                int ni = courant.pousseurI + d[0];
+                int nj = courant.pousseurJ + d[1];
+
+                if (ni >= 0 && ni < courant.nbLignes && nj >= 0 && nj < courant.nbColonnes
+                        && !courant.aMur(ni, nj) && !courant.aCaisse(ni, nj)) {
+                    String code = ni + "," + nj;
+                    if (!dejavu.containsKey(code)) {
+                        Niveau suivant = courant.deplacerPousseur(ni, nj);
+                        dejavu.put(code, courant);
+                        actifs.add(suivant);
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<>();
+    }
+
+    public List<Niveau> chemin(Map<String, Niveau> dejaVu, Niveau carteGagnante) {
+        List<Niveau> coupsDePousse = new ArrayList<>();
         Niveau courant = carteGagnante;
 
         while (courant != null) {
-            chemin.add(0,courant);
+            coupsDePousse.add(0, courant);
             courant = dejaVu.get(courant.code());
         }
 
-        return chemin;
+        List<Niveau> cheminComplet = new ArrayList<>();
+
+        for (int k = 0; k < coupsDePousse.size() - 1; k++) {
+            Niveau avant = coupsDePousse.get(k);
+            Niveau apres = coupsDePousse.get(k + 1);
+
+            List<int[]> caissesAvant = avant.coordonneesCaisses();
+            List<int[]> caissesApres = apres.coordonneesCaisses();
+
+            int caisseBougeeI = -1, caisseBougeeJ = -1;
+            int pousseurCibleI = -1, pousseurCibleJ = -1;
+
+            for (int[] ca : caissesAvant) {
+                boolean presenteApres = false;
+                for (int[] cb : caissesApres) {
+                    if (ca[0] == cb[0] && ca[1] == cb[1]) { presenteApres = true; break; }
+                }
+                if (!presenteApres) {
+                    caisseBougeeI = ca[0];
+                    caisseBougeeJ = ca[1];
+                }
+            }
+
+            for (int[] cb : caissesApres) {
+                boolean presenteAvant = false;
+                for (int[] ca : caissesAvant) {
+                    if (cb[0] == ca[0] && cb[1] == ca[1]) { presenteAvant = true; break; }
+                }
+                if (!presenteAvant) {
+                    pousseurCibleI = caisseBougeeI + (caisseBougeeI - cb[0]);
+                    pousseurCibleJ = caisseBougeeJ + (caisseBougeeJ - cb[1]);
+                }
+            }
+
+            Niveau etatPourBFS = (Niveau) avant.clone();
+            etatPourBFS.supprimePersonnage();
+            etatPourBFS.ajoutePousseur(avant.pousseurI, avant.pousseurJ);
+            etatPourBFS.setPositionPousseur(avant.pousseurI, avant.pousseurJ);
+
+            List<Niveau> deplacement = cheminPousseur(etatPourBFS, pousseurCibleI, pousseurCibleJ);
+
+            for (int m = 0; m < deplacement.size() - 1; m++) {
+                Niveau etape = (Niveau) avant.clone();
+                etape.supprimePersonnage();
+                int pi = deplacement.get(m).pousseurI;
+                int pj = deplacement.get(m).pousseurJ;
+                etape.ajoutePousseur(pi, pj);
+                etape.setPositionPousseur(pi, pj);
+                cheminComplet.add(etape);
+            }
+
+            cheminComplet.add(apres);
+        }
+
+        return cheminComplet;
     }
 
-    //utilisation du plus court chemin ici
-    //on a implemente ça avant l'heuristique
     public List<Niveau> resoluble(Niveau depart) {
         Niveau debut = (Niveau) depart.clone();
         debut.clonePersonnage();
@@ -140,12 +235,10 @@ public class Solveur {
             }
         }
 
-        //le niveau ne peut pas être resolu donc
         System.out.print("Impossible, Nombre itérations: " + dejavu.size());
         return null;
     }
 
-    /*fonction pour avoir la liste des voisisn de (i , j)*/
     public List<Couple> getVoisins(int i , int j) {
         List<Couple> listVoisins = new ArrayList<Couple>();
         Couple c1 = new Couple(i - 1, j);
@@ -161,14 +254,11 @@ public class Solveur {
         return listVoisins;
     }
 
-    //Verifier toujours qu'on est dans la grille parce que pour les cases en extrémité
-    // on risque de sortir
     public boolean estDansGrille(Niveau depart, int i, int j) {
         return i >= 0 && i < depart.nbLignes && j >= 0 && j < depart.nbColonnes;
     }
 
     public int[][] heuristique(Niveau depart){
-        //le tableau à retourner 
         int [][] dist = new int [depart.nbLignes][depart.nbColonnes];
 
         Deque<Couple> actifs = new ArrayDeque<Couple>();
@@ -178,13 +268,13 @@ public class Solveur {
                 if (depart.aBut(i,j)){
                     dist[i][j] = 0;
                     Couple couple = new Couple(i,j);
-                    actifs.add(couple);//initialisation à 0
+                    actifs.add(couple);
                 }
                 else if (depart.aMur(i,j)){
-                    dist[i][j] = MUR; //-1 pour les murs
+                    dist[i][j] = MUR;
                 }
                 else {
-                    dist[i][j] = INFINI; //valeur qu'on suppose à infini
+                    dist[i][j] = INFINI;
                 }
             }
         }
@@ -194,7 +284,6 @@ public class Solveur {
             int ligne = element.getI();
             int colonne = element.getJ();
 
-            //recuperer la liste des voisisn 
             List<Couple> voisins = getVoisins(ligne , colonne);
 
             for(int i = 0; i < voisins.size(); i++){
@@ -212,23 +301,23 @@ public class Solveur {
         return dist;
     }
 
-   public int coutHeuristique(Niveau courant, int[][] distBut) {
-    int cout = 0;
+    public int coutHeuristique(Niveau courant, int[][] distBut) {
+        int cout = 0;
 
-    List<int[]> caisses = courant.coordonneesCaisses();
+        List<int[]> caisses = courant.coordonneesCaisses();
 
-    for (int[] caisse : caisses) {
-        int i = caisse[0];
-        int j = caisse[1];
+        for (int[] caisse : caisses) {
+            int i = caisse[0];
+            int j = caisse[1];
 
-        if (distBut[i][j] == INFINI) {
-            return INFINI;
+            if (distBut[i][j] == INFINI) {
+                return INFINI;
+            }
+
+            cout += distBut[i][j];
         }
 
-        cout += distBut[i][j];
-    }
-
-    return cout;
+        return cout;
     }
 
     public List<Niveau> aStar(Niveau depart) {
@@ -241,10 +330,9 @@ public class Solveur {
                 Comparator.comparingInt(NiveauPriorite::getPriorite)
         );
 
-        Map<String, Niveau> dejavu = new HashMap<>(); //on associe à chaque état son predecesseur
-        Map<String, Integer> distance = new HashMap<>(); //à chaque état son coût
+        Map<String, Niveau> dejavu = new HashMap<>();
+        Map<String, Integer> distance = new HashMap<>();
 
-       //initialisation
         String codeInitial = debut.code();
         distance.put(codeInitial, 0);
         dejavu.put(codeInitial, null);
@@ -255,24 +343,22 @@ public class Solveur {
         while (!actifs.isEmpty()) {
             Niveau courant = actifs.poll().getNiveau();
             String codeCourant = courant.code();
-            int gCourant = distance.get(codeCourant); //c'est le cout parcouru depuis le départ(la fonction g)
+            int gCourant = distance.get(codeCourant);
 
             if (courant.estResolu()) {
-                System.out.print("Nombre itérations: " + dejavu.size());
                 return chemin(dejavu, courant);
             }
 
             for (Niveau suivant : courant.cartesAccessibles()) {
                 String codeSuivant = suivant.code();
-                int nouveauG = gCourant + 1; //la nouvelle distance parcouruue depuis le debut
+                int nouveauG = gCourant + 1;
 
                 if (!distance.containsKey(codeSuivant) || nouveauG < distance.get(codeSuivant)) {
-                    //mise à jour si jamais vu ou je trouve un chemin meilleur
                     distance.put(codeSuivant, nouveauG);
                     dejavu.put(codeSuivant, courant);
 
                     int h = coutHeuristique(suivant, distBut);
-                    int f = nouveauG + h; //ça revient a  la formule f=g+h (f etant la prioritz dans la file aussi )
+                    int f = nouveauG + h;
 
                     actifs.add(new NiveauPriorite(suivant, f));
                 }

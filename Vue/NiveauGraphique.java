@@ -13,7 +13,7 @@ public class NiveauGraphique extends JComponent {
     public static final int TAILLE_CASE = Niveau.TAILLE_CASE;
 
     // Chemin du fichier de niveaux
-    private static final String CHEMIN_NIVEAUX = "../sokoban-tests/Microban.txt";
+    private static final String CHEMIN_NIVEAUX = "../sokoban-tests/Tests.txt";
 
     // Images
     private Image But_img, Caisse_img, Caisse_sur_but_img, Mur_img, Pousseur_img, Sol_img;
